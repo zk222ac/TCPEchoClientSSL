@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,12 +12,22 @@ namespace TCPEchoClientSSL
     {
         static void Main(string[] args)
         {
-            // The code provided will print ‘Hello World’ to the console.
-            // Press Ctrl+F5 (or go to Debug > Start Without Debugging) to run your app.
-            Console.WriteLine("Hello World!");
-            Console.ReadKey();
+            TcpClient clientSocket = new TcpClient("localhost", 7000);
 
-            // Go to http://aka.ms/dotnet-get-started-console to continue learning how to build a console app! 
+            Stream ns = clientSocket.GetStream();
+            StreamReader sr = new StreamReader(ns);
+            StreamWriter sw = new StreamWriter(ns) {AutoFlush = true}; // enable automatic flushing
+            for (int i = 0; i < 100; i++)
+            {
+                string message = "Secure socket Layer " + i;
+                sw.WriteLine(message);
+                string serverAnswer = sr.ReadLine();
+                Console.WriteLine("Server: " + serverAnswer);
+            }
+            Console.WriteLine("Client finished");
+            // Console.ReadLine();
+            ns.Close();
+            clientSocket.Close();
         }
     }
 }
